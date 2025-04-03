@@ -122,39 +122,7 @@ class _CategoryListScreenState extends State<CategoryListScreen> {
             ),
           ),
 
-          Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(15),
-              child: Container(
-                height: 140,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage('images/iphone_background.jpg'),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                alignment: Alignment.center,
-                child: Text(
-                  "Apple iPhones",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    shadows: [
-                      Shadow(
-                        color: Colors.black,
-                        offset: Offset(2, 2),
-                        blurRadius: 4,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-
+          // Boxes for categories
           Expanded(
             child: Padding(
               padding: const EdgeInsets.all(12),
