@@ -32,56 +32,119 @@ class _ProductsDetailsScreenState extends State<ProductsDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(product.title)),
-      body: Center(
+      appBar: AppBar(
+        title: Text(
+          product.title,
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: Colors.blueAccent,
+        elevation: 4,
+      ),
+      body: SingleChildScrollView(
+        padding: EdgeInsets.all(16.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const Image(
-              image: AssetImage("images/luxurious_upholstered_bed_set.jpg"),
-              height: 200,
+            Container(
+              height: 250,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 8,
+                    offset: Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Image.asset(
+                  "images/${product.image}",
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                ),
+              ),
             ),
-            Text('Title: ${product.title}'),
-            Text('Price: ${product.price.toString()}'),
+            SizedBox(height: 16),
+            Text(
+              product.title,
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 8),
+            Text(
+              "\$${product.price.toStringAsFixed(2)}",
+              style: TextStyle(
+                fontSize: 20,
+                color: Colors.blueAccent,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            SizedBox(height: 20),
+            Divider(),
+            SizedBox(height: 16),
             if (cartQuantity != 0)
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  TextButton(
+                  IconButton(
+                    icon: Icon(
+                      Icons.remove_circle,
+                      color: Colors.redAccent,
+                      size: 32,
+                    ),
                     onPressed: () {
                       if (cartQuantity > 1) {
                         CartDb.addToCart(product.productId, cartQuantity - 1);
                         updateCartItem();
                       }
                     },
-                    child: Text("-"),
                   ),
-                  Text(cartQuantity.toString()),
-                  TextButton(
+                  SizedBox(width: 16),
+                  Text(
+                    cartQuantity.toString(),
+                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(width: 16),
+                  IconButton(
+                    icon: Icon(Icons.add_circle, color: Colors.green, size: 32),
                     onPressed: () {
                       if (cartQuantity < 5) {
                         CartDb.addToCart(product.productId, cartQuantity + 1);
                         updateCartItem();
                       }
                     },
-                    child: Text("+"),
                   ),
                 ],
               ),
-            cartQuantity == 0
-                ? TextButton(
-                  onPressed: () {
+            SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  if (cartQuantity == 0) {
                     CartDb.addToCart(product.productId, 1);
-                    updateCartItem();
-                  },
-                  child: Text("Add To Cart"),
-                )
-                : TextButton(
-                  onPressed: () {
+                  } else {
                     CartDb.removeFromCart(product.productId);
-                    updateCartItem();
-                  },
-                  child: Text("Remove From Cart"),
+                  }
+                  updateCartItem();
+                },
+                style: ElevatedButton.styleFrom(
+                  padding: EdgeInsets.symmetric(vertical: 14),
+                  backgroundColor:
+                      cartQuantity == 0 ? Colors.blueAccent : Colors.redAccent,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
+                child: Text(
+                  cartQuantity == 0 ? "Add To Cart" : "Remove From Cart",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
           ],
         ),
       ),

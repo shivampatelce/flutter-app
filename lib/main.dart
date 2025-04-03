@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutterprjgroup3/cart_screen.dart';
 import 'package:flutterprjgroup3/category_list_screen.dart';
-import 'package:flutterprjgroup3/products_screen.dart';
+import 'package:flutterprjgroup3/splash_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'TriSpark Gadgets',
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -33,7 +33,7 @@ class MyApp extends StatelessWidget {
         // tested with just a hot reload.
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: SplashScreen(),
     );
   }
 }
@@ -103,12 +103,15 @@ class _MyHomePageState extends State<MyHomePage> {
               },
               child: Text("Get Started"),
             ),
-            TextButton(onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => CartScreen()),
-              );
-            }, child: Text("Go To Cart"))
+            TextButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => CartScreen()),
+                );
+              },
+              child: Text("Go To Cart"),
+            ),
           ],
         ),
       ),

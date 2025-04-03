@@ -33,7 +33,11 @@ class _CartScreenState extends State<CartScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Cart')),
+      appBar: AppBar(
+        title: Text('Cart', style: TextStyle(fontWeight: FontWeight.bold)),
+        backgroundColor: Colors.blueAccent,
+        elevation: 4,
+      ),
       body: Column(
         children: [
           cartItems.isNotEmpty
@@ -51,51 +55,98 @@ class _CartScreenState extends State<CartScreen> {
                           );
 
                           return Card(
-                            color: Colors.white,
+                            elevation: 5,
+                            margin: EdgeInsets.symmetric(
+                              vertical: 8,
+                              horizontal: 12,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
                             child: Column(
                               children: [
-                                Image.asset(
-                                  "images/luxurious_upholstered_bed_set.jpg",
-                                  height: 200,
+                                ClipRRect(
+                                  borderRadius: BorderRadius.vertical(
+                                    top: Radius.circular(12),
+                                  ),
+                                  child: Image.asset(
+                                    "images/luxurious_upholstered_bed_set.jpg",
+                                    height: 200,
+                                    width: double.infinity,
+                                    fit: BoxFit.cover,
+                                  ),
                                 ),
-                                Text(product.title),
-                                Text("\$${product.price}"),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    TextButton(
-                                      onPressed: () {
-                                        if (cartQuantity > 1) {
-                                          CartDb.addToCart(
-                                            product.productId,
-                                            cartQuantity - 1,
-                                          );
+                                Padding(
+                                  padding: const EdgeInsets.all(12.0),
+                                  child: Column(
+                                    children: [
+                                      Text(
+                                        product.title,
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                      SizedBox(height: 5),
+                                      Text(
+                                        "\$${product.price.toString()}",
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          color: Colors.blueAccent,
+                                        ),
+                                      ),
+                                      SizedBox(height: 10),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          IconButton(
+                                            icon: Icon(
+                                              Icons.remove,
+                                              color: Colors.red,
+                                            ),
+                                            onPressed: () {
+                                              if (cartQuantity > 1) {
+                                                CartDb.addToCart(
+                                                  product.productId,
+                                                  cartQuantity - 1,
+                                                );
+                                                updateCart();
+                                              }
+                                            },
+                                          ),
+                                          Text(
+                                            cartQuantity.toString(),
+                                            style: TextStyle(fontSize: 18),
+                                          ),
+                                          IconButton(
+                                            icon: Icon(
+                                              Icons.add,
+                                              color: Colors.green,
+                                            ),
+                                            onPressed: () {
+                                              if (cartQuantity < 5) {
+                                                CartDb.addToCart(
+                                                  product.productId,
+                                                  cartQuantity + 1,
+                                                );
+                                                updateCart();
+                                              }
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                      SizedBox(height: 8),
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          CartDb.removeFromCart(cart.productId);
                                           updateCart();
-                                        }
-                                      },
-                                      child: Text("-"),
-                                    ),
-                                    Text(cartQuantity.toString()),
-                                    TextButton(
-                                      onPressed: () {
-                                        if (cartQuantity < 5) {
-                                          CartDb.addToCart(
-                                            product.productId,
-                                            cartQuantity + 1,
-                                          );
-                                          updateCart();
-                                        }
-                                      },
-                                      child: Text("+"),
-                                    ),
-                                  ],
-                                ),
-                                TextButton(
-                                  onPressed: () {
-                                    CartDb.removeFromCart(cart.productId);
-                                    updateCart();
-                                  },
-                                  child: Text("Remove From Cart"),
+                                        },
+                                        child: Text("Remove From Cart"),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ],
                             ),
@@ -103,23 +154,29 @@ class _CartScreenState extends State<CartScreen> {
                         },
                       ),
                     ),
-                    // Checkout Button
                     Padding(
                       padding: const EdgeInsets.all(12.0),
                       child: ElevatedButton(
                         onPressed: () {
                           Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => CheckoutScreen())
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => CheckoutScreen(),
+                            ),
                           );
                         },
-                        child: Text("Checkout"),
+                        child: Text("Proceed to Checkout"),
                       ),
                     ),
                   ],
                 ),
               )
-              : Center(child: Text("Your Cart Is Empty.")),
+              : Center(
+                child: Text(
+                  "Your Cart Is Empty.",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+              ),
         ],
       ),
     );

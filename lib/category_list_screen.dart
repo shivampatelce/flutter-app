@@ -1,5 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterprjgroup3/cart_screen.dart';
 import 'package:flutterprjgroup3/categories_db.dart';
 import 'package:flutterprjgroup3/product.dart';
 import 'package:flutterprjgroup3/products_screen.dart';
@@ -27,8 +27,8 @@ class _CategoryListScreenState extends State<CategoryListScreen> {
 
   @override
   void dispose() {
-    super.dispose();
     _searchController.dispose();
+    super.dispose();
   }
 
   void initializeCategories() {
@@ -38,70 +38,186 @@ class _CategoryListScreenState extends State<CategoryListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Categories')),
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: Text(
+          'TriSpark Gadgets',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: Colors.blueAccent,
+        elevation: 4,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.shopping_cart, size: 28),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => CartScreen()),
+              );
+            },
+          ),
+        ],
+      ),
       body: Column(
         children: [
           Padding(
-            padding: EdgeInsets.all(8.0),
-            child: Column(
+            padding: const EdgeInsets.all(12.0),
+            child: Row(
               children: [
-                TextField(
-                  controller: _searchController,
-                  decoration: InputDecoration(
-                    hintText: 'Search products',
-                    prefixIcon: Icon(Icons.search),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
+                Expanded(
+                  child: TextField(
+                    controller: _searchController,
+                    decoration: InputDecoration(
+                      hintText: 'Search products...',
+                      prefixIcon: Icon(Icons.search, color: Colors.grey),
+                      fillColor: Colors.white,
+                      filled: true,
+                      contentPadding: EdgeInsets.symmetric(vertical: 14),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30),
+                        borderSide: BorderSide.none,
+                      ),
+                      suffixIcon: IconButton(
+                        icon: Icon(Icons.clear, color: Colors.grey),
+                        onPressed: () {
+                          setState(() {
+                            _searchController.clear();
+                            _searchProductText = "";
+                          });
+                        },
+                      ),
                     ),
+                    style: TextStyle(fontSize: 16),
                   ),
                 ),
-                TextButton(onPressed: () {
-                  if(_searchProductText != '') {
-                    List<Product> filteredProducts = categories.values
-                        .expand((list) => list)
-                        .where((product) =>
-                        product.title
-                            .toLowerCase()
-                            .contains(_searchProductText.toLowerCase()))
-                        .toList();
+                SizedBox(width: 10),
+                IconButton(
+                  icon: Icon(Icons.search, size: 30, color: Colors.blueAccent),
+                  onPressed: () {
+                    if (_searchProductText.isNotEmpty) {
+                      List<Product> filteredProducts =
+                          categories.values
+                              .expand((list) => list)
+                              .where(
+                                (product) => product.title
+                                    .toLowerCase()
+                                    .contains(_searchProductText.toLowerCase()),
+                              )
+                              .toList();
 
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder:
-                            (context) =>
-                            ProductsScreen(products: filteredProducts, searchText: _searchProductText),
-                      ),
-                    );
-                  }
-                }, child: Text("Search"))
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder:
+                              (context) => ProductsScreen(
+                                products: filteredProducts,
+                                searchText: _searchProductText,
+                              ),
+                        ),
+                      );
+                    }
+                  },
+                ),
               ],
             ),
           ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: categories.length,
-              itemBuilder: (BuildContext context, int index) {
-                String categoryTitle = categories.keys.elementAt(index);
-                List<Product> productList = categories[categoryTitle] ?? [];
 
-                return GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder:
-                            (context) =>
-                                ProductsScreen(products: productList),
-                      ),
-                    );
-                  },
-                  child: Card(
-                    color: Colors.blueAccent,
-                    child: Column(children: [Text(categoryTitle)]),
+          Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(15),
+              child: Container(
+                height: 140,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage('images/iphone_background.jpg'),
+                    fit: BoxFit.cover,
                   ),
-                );
-              },
+                ),
+                alignment: Alignment.center,
+                child: Text(
+                  "Apple iPhones",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    shadows: [
+                      Shadow(
+                        color: Colors.black,
+                        offset: Offset(2, 2),
+                        blurRadius: 4,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: GridView.builder(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  childAspectRatio: 1,
+                  mainAxisSpacing: 12,
+                  crossAxisSpacing: 12,
+                ),
+                itemCount: categories.length,
+                itemBuilder: (context, index) {
+                  String categoryName = categories.keys.elementAt(index);
+                  List<Product> categoryProducts = categories[categoryName]!;
+
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder:
+                              (context) =>
+                                  ProductsScreen(products: categoryProducts),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(15),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black12,
+                            blurRadius: 6,
+                            offset: Offset(0, 2),
+                          ),
+                        ],
+                        image: DecorationImage(
+                          image: AssetImage('images/$categoryName.jpg'),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      alignment: Alignment.center,
+                      child: Text(
+                        categoryName.toUpperCase(),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 22,
+                          color: Colors.white,
+                          shadows: [
+                            Shadow(
+                              color: Colors.black,
+                              offset: Offset(2, 2),
+                              blurRadius: 4,
+                            ),
+                          ],
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  );
+                },
+              ),
             ),
           ),
         ],
