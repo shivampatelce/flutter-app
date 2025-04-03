@@ -42,13 +42,13 @@ class _CategoryListScreenState extends State<CategoryListScreen> {
       appBar: AppBar(
         title: Text(
           'TriSpark Gadgets',
-          style: TextStyle(fontWeight: FontWeight.bold),
+          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
         ),
         backgroundColor: Colors.blueAccent,
         elevation: 4,
         actions: [
           IconButton(
-            icon: Icon(Icons.shopping_cart, size: 28),
+            icon: Icon(Icons.shopping_cart, size: 28, color: Colors.white),
             onPressed: () {
               Navigator.push(
                 context,

@@ -3,6 +3,7 @@ import 'package:flutterprjgroup3/cart.dart';
 import 'package:flutterprjgroup3/cart_db.dart';
 import 'package:flutterprjgroup3/cart_screen.dart';
 import 'package:flutterprjgroup3/categories_db.dart';
+import 'package:flutterprjgroup3/category_list_screen.dart';
 import 'package:flutterprjgroup3/product.dart';
 import 'package:flutterprjgroup3/product_details_screen.dart';
 
@@ -23,6 +24,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
   final TextEditingController _searchController = TextEditingController();
   String _searchControlText = "";
   String _currentSearchText = "";
+  double _subtotal = 0;
 
   @override
   void initState() {
@@ -56,12 +58,25 @@ class _ProductsScreenState extends State<ProductsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Products', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(
+          'Products',
+          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+        ),
         backgroundColor: Colors.blueAccent,
         elevation: 4,
+        leading: IconButton(
+          icon: Icon(Icons.home, color: Colors.white),
+          onPressed: () {
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => CategoryListScreen()),
+              (route) => false,
+            );
+          },
+        ),
         actions: [
           IconButton(
-            icon: Icon(Icons.shopping_cart, size: 28),
+            icon: Icon(Icons.shopping_cart, size: 28, color: Colors.white),
             onPressed: () {
               Navigator.push(
                 context,
@@ -137,7 +152,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: Text(
-                "Results for: \"$_currentSearchText\"",
+                "Results for: ${_currentSearchText}",
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
             ),
@@ -171,8 +186,12 @@ class _ProductsScreenState extends State<ProductsScreen> {
                               context,
                               MaterialPageRoute(
                                 builder:
-                                    (context) =>
-                                        ProductsDetailsScreen(product: product),
+                                    (context) => ProductsDetailsScreen(
+                                      product: product,
+                                      onCartUpdate: () {
+                                        updateCart();
+                                      },
+                                    ),
                               ),
                             );
                           },

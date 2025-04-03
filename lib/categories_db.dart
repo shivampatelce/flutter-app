@@ -70,9 +70,20 @@ class CategoriesDb {
     Map<String, List<Product>> categories = {
       "laptops": category1Products,
       "mobiles": category2Products,
-      "tvs": []
+      "tvs": [],
     };
 
     return categories;
+  }
+
+  static double getProductPriceById(int productId) {
+    for (var category in getCategories().values) {
+      for (var product in category) {
+        if (product.productId == productId) {
+          return product.price;
+        }
+      }
+    }
+    return 0;
   }
 }

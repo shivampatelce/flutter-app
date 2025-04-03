@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutterprjgroup3/cart_db.dart';
+import 'package:flutterprjgroup3/cart_screen.dart';
 import 'package:flutterprjgroup3/product.dart';
 
 class ProductsDetailsScreen extends StatefulWidget {
   final Product product;
+  final VoidCallback onCartUpdate;
 
-  const ProductsDetailsScreen({Key? key, required this.product})
-    : super(key: key);
+  const ProductsDetailsScreen({
+    Key? key,
+    required this.product,
+    required this.onCartUpdate,
+  }) : super(key: key);
 
   @override
   _ProductsDetailsScreenState createState() => _ProductsDetailsScreenState();
@@ -35,10 +40,27 @@ class _ProductsDetailsScreenState extends State<ProductsDetailsScreen> {
       appBar: AppBar(
         title: Text(
           product.title,
-          style: TextStyle(fontWeight: FontWeight.bold),
+          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
         ),
         backgroundColor: Colors.blueAccent,
         elevation: 4,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.shopping_cart, size: 28, color: Colors.white),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => CartScreen()),
+              );
+            },
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16.0),
@@ -98,6 +120,7 @@ class _ProductsDetailsScreenState extends State<ProductsDetailsScreen> {
                       if (cartQuantity > 1) {
                         CartDb.addToCart(product.productId, cartQuantity - 1);
                         updateCartItem();
+                        widget.onCartUpdate();
                       }
                     },
                   ),
@@ -113,6 +136,7 @@ class _ProductsDetailsScreenState extends State<ProductsDetailsScreen> {
                       if (cartQuantity < 5) {
                         CartDb.addToCart(product.productId, cartQuantity + 1);
                         updateCartItem();
+                        widget.onCartUpdate();
                       }
                     },
                   ),
@@ -129,6 +153,7 @@ class _ProductsDetailsScreenState extends State<ProductsDetailsScreen> {
                     CartDb.removeFromCart(product.productId);
                   }
                   updateCartItem();
+                  widget.onCartUpdate();
                 },
                 style: ElevatedButton.styleFrom(
                   padding: EdgeInsets.symmetric(vertical: 14),
