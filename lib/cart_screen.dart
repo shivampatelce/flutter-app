@@ -55,7 +55,7 @@ class _CartScreenState extends State<CartScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Your Cart', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+        title: Text('Cart', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
         backgroundColor: Colors.blueAccent,
         elevation: 4,
         leading: IconButton(
@@ -238,7 +238,7 @@ class _CartScreenState extends State<CartScreen> {
                       ),
                       child: Text(
                         "Proceed to Checkout",
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
                       ),
                     ),
                   ),
