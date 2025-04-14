@@ -11,30 +11,40 @@ class ProductsScreen extends StatefulWidget {
   final List<Product> products;
   final String searchText;
 
-  ProductsScreen({Key? key, required this.products, this.searchText = ""}) : super(key: key);
+  const ProductsScreen({Key? key, required this.products, this.searchText = ""})
+      : super(key: key);
 
   @override
   _ProductsScreenState createState() => _ProductsScreenState();
 }
 
-class _ProductsScreenState extends State<ProductsScreen> {
+class _ProductsScreenState extends State<ProductsScreen>
+    with SingleTickerProviderStateMixin {
   late final List<Product> products;
   late List<Cart> cart;
   final TextEditingController _searchController = TextEditingController();
   String _searchControlText = "";
   String _currentSearchText = "";
-  bool _isLoading = true;
+
+  late AnimationController _controller;
+  late Animation<double> _scaleAnimation;
 
   @override
   void initState() {
     super.initState();
     products = widget.products;
-    Future.delayed(Duration(milliseconds: 500), () {
-      updateCart();
-      setState(() {
-        _isLoading = false;
-      });
-    });
+    cart = CartDb.cartList;
+
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 600),
+    );
+
+    _scaleAnimation = Tween<double>(begin: 0.9, end: 1.0).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeOut),
+    );
+
+    _controller.forward();
 
     if (widget.searchText.isNotEmpty) {
       _currentSearchText = widget.searchText;
@@ -42,9 +52,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
     }
 
     _searchController.addListener(() {
-      setState(() {
-        _searchControlText = _searchController.text;
-      });
+      _searchControlText = _searchController.text;
     });
   }
 
@@ -57,6 +65,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
   @override
   void dispose() {
     _searchController.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
@@ -64,31 +73,33 @@ class _ProductsScreenState extends State<ProductsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Products', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+        title:
+        const Text('Products', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
         backgroundColor: Colors.blueAccent,
         elevation: 4,
         leading: IconButton(
-          icon: Icon(Icons.home, color: Colors.white),
+          icon: const Icon(Icons.home, color: Colors.white),
           onPressed: () {
             Navigator.pushAndRemoveUntil(
               context,
-              MaterialPageRoute(builder: (context) => CategoryListScreen()),
+              MaterialPageRoute(builder: (_) => CategoryListScreen()),
                   (route) => false,
             );
           },
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.shopping_cart, size: 28, color: Colors.white),
+            icon: const Icon(Icons.shopping_cart, size: 28, color: Colors.white),
             onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => CartScreen()));
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => CartScreen()),
+              );
             },
           ),
         ],
       ),
-      body: _isLoading
-          ? Center(child: CircularProgressIndicator(color: Colors.blueAccent))
-          : Column(
+      body: Column(
         children: [
           Padding(
             padding: const EdgeInsets.all(12.0),
@@ -99,41 +110,40 @@ class _ProductsScreenState extends State<ProductsScreen> {
                     controller: _searchController,
                     decoration: InputDecoration(
                       hintText: 'Search products...',
-                      prefixIcon: Icon(Icons.search, color: Colors.grey),
+                      prefixIcon: const Icon(Icons.search, color: Colors.grey),
                       fillColor: Colors.white,
                       filled: true,
-                      contentPadding: EdgeInsets.symmetric(vertical: 14),
+                      contentPadding: const EdgeInsets.symmetric(vertical: 14),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(30),
                         borderSide: BorderSide.none,
                       ),
                       suffixIcon: IconButton(
-                        icon: Icon(Icons.clear, color: Colors.grey),
+                        icon: const Icon(Icons.clear, color: Colors.grey),
                         onPressed: () {
-                          setState(() {
-                            _searchController.clear();
-                            _searchControlText = "";
-                          });
+                          _searchController.clear();
+                          _searchControlText = "";
                         },
                       ),
                     ),
-                    style: TextStyle(fontSize: 16),
+                    style: const TextStyle(fontSize: 16),
                   ),
                 ),
-                SizedBox(width: 10),
+                const SizedBox(width: 10),
                 IconButton(
-                  icon: Icon(Icons.search, size: 30, color: Colors.blueAccent),
+                  icon: const Icon(Icons.search, size: 30, color: Colors.blueAccent),
                   onPressed: () {
-                    List<Product> filteredProducts = CategoriesDb.getCategories().values
+                    final filteredProducts = CategoriesDb.getCategories().values
                         .expand((list) => list)
-                        .where((product) =>
-                        product.title.toLowerCase().contains(_searchControlText.toLowerCase()))
+                        .where((product) => product.title
+                        .toLowerCase()
+                        .contains(_searchControlText.toLowerCase()))
                         .toList();
 
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => ProductsScreen(
+                        builder: (_) => ProductsScreen(
                           products: filteredProducts,
                           searchText: _searchControlText,
                         ),
@@ -148,142 +158,138 @@ class _ProductsScreenState extends State<ProductsScreen> {
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: Text(
-                "Results for: ${_currentSearchText}",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                "Results for: $_currentSearchText",
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
             ),
           Expanded(
             child: products.isNotEmpty
-                ? GridView.builder(
-              padding: EdgeInsets.all(12),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 0.75,
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
-              ),
-              itemCount: products.length,
-              itemBuilder: (context, index) {
-                Product product = products[index];
-                int productId = product.productId;
-                int cartQuantity = cart
-                    .firstWhere((cartItem) => cartItem.productId == productId,
-                    orElse: () => Cart(productId, 0))
-                    .quantity;
-
-                return AnimatedOpacity(
-                  duration: Duration(milliseconds: 500),
-                  opacity: 1,
-                  child: AnimatedSlide(
-                    duration: Duration(milliseconds: 500),
-                    offset: Offset(0, 0),
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ProductsDetailsScreen(
-                              product: product,
-                              onCartUpdate: () {
-                                updateCart();
-                              },
-                            ),
-                          ),
-                        );
-                      },
-                      child: Card(
-                        elevation: 5,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
-                              child: Image.asset(
-                                "images/${product.image}",
-                                height: 150,
-                                width: double.infinity,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Column(
-                                children: [
-                                  Text(
-                                    product.title,
-                                    style: TextStyle(
-                                        fontSize: 16, fontWeight: FontWeight.bold),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  SizedBox(height: 5),
-                                  Text(
-                                    "\$${product.price.toStringAsFixed(2)}",
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.blueAccent,
-                                    ),
-                                  ),
-                                  SizedBox(height: 8),
-                                  if (cartQuantity > 0)
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        IconButton(
-                                          icon: Icon(Icons.remove),
-                                          onPressed: () {
-                                            if (cartQuantity > 1) {
-                                              CartDb.addToCart(productId, cartQuantity - 1);
-                                              updateCart();
-                                            }
-                                          },
-                                        ),
-                                        Text(
-                                          cartQuantity.toString(),
-                                          style: TextStyle(fontSize: 16),
-                                        ),
-                                        IconButton(
-                                          icon: Icon(Icons.add),
-                                          onPressed: () {
-                                            if (cartQuantity < 5) {
-                                              CartDb.addToCart(productId, cartQuantity + 1);
-                                              updateCart();
-                                            }
-                                          },
-                                        ),
-                                      ],
-                                    ),
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      if (cartQuantity == 0) {
-                                        CartDb.addToCart(productId, 1);
-                                      } else {
-                                        CartDb.removeFromCart(productId);
-                                      }
-                                      updateCart();
-                                    },
-                                    child:
-                                    Text(cartQuantity == 0 ? "Add to Cart" : "Remove"),
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.blueAccent,
-                                      foregroundColor: Colors.white,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
+                ? AnimatedBuilder(
+              animation: _scaleAnimation,
+              builder: (context, child) {
+                return Transform.scale(
+                  scale: _scaleAnimation.value,
+                  child: child,
                 );
               },
+              child: GridView.builder(
+                padding: const EdgeInsets.all(12),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  childAspectRatio: 0.75,
+                  crossAxisSpacing: 12,
+                  mainAxisSpacing: 12,
+                ),
+                itemCount: products.length,
+                itemBuilder: (context, index) {
+                  final product = products[index];
+                  final productId = product.productId;
+                  final cartQuantity = cart
+                      .firstWhere((c) => c.productId == productId,
+                      orElse: () => Cart(productId, 0))
+                      .quantity;
+
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => ProductsDetailsScreen(
+                            product: product,
+                            onCartUpdate: updateCart,
+                          ),
+                        ),
+                      );
+                    },
+                    child: Card(
+                      elevation: 5,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12)),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          ClipRRect(
+                            borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+                            child: Image.asset(
+                              "images/${product.image}",
+                              height: 150,
+                              width: double.infinity,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              children: [
+                                Text(
+                                  product.title,
+                                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                  textAlign: TextAlign.center,
+                                ),
+                                const SizedBox(height: 5),
+                                Text(
+                                  "\$${product.price.toStringAsFixed(2)}",
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.blueAccent,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                if (cartQuantity > 0)
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      IconButton(
+                                        icon: const Icon(Icons.remove),
+                                        onPressed: () {
+                                          if (cartQuantity > 1) {
+                                            CartDb.addToCart(productId, cartQuantity - 1);
+                                            updateCart();
+                                          }
+                                        },
+                                      ),
+                                      Text(cartQuantity.toString(),
+                                          style: const TextStyle(fontSize: 16)),
+                                      IconButton(
+                                        icon: const Icon(Icons.add),
+                                        onPressed: () {
+                                          if (cartQuantity < 5) {
+                                            CartDb.addToCart(productId, cartQuantity + 1);
+                                            updateCart();
+                                          }
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    if (cartQuantity == 0) {
+                                      CartDb.addToCart(productId, 1);
+                                    } else {
+                                      CartDb.removeFromCart(productId);
+                                    }
+                                    updateCart();
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.blueAccent,
+                                    foregroundColor: Colors.white,
+                                  ),
+                                  child: Text(cartQuantity == 0 ? "Add to Cart" : "Remove"),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
             )
                 : Center(
               child: Text(
-                "No products found for ${_currentSearchText}",
-                style: TextStyle(fontSize: 16),
+                "No products found for $_currentSearchText",
+                style: const TextStyle(fontSize: 16),
               ),
             ),
           ),

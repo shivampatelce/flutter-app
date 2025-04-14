@@ -31,7 +31,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // LOGO with AnimatedOpacity + AnimatedScale
+              // Animated Logo with Opacity and scale
               AnimatedOpacity(
                 duration: Duration(milliseconds: 1000),
                 opacity: _animate ? 1 : 0,

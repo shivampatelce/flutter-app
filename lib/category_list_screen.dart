@@ -9,41 +9,50 @@ class CategoryListScreen extends StatefulWidget {
   _CategoryListScreenState createState() => _CategoryListScreenState();
 }
 
-class _CategoryListScreenState extends State<CategoryListScreen> {
+class _CategoryListScreenState extends State<CategoryListScreen>
+    with SingleTickerProviderStateMixin {
   late Map<String, List<Product>> categories;
   final TextEditingController _searchController = TextEditingController();
   String _searchProductText = "";
   bool _loading = true;
-  bool _showGrid = false;
+
+  late AnimationController _controller;
+  late Animation<double> _scaleAnimation;
 
   @override
   void initState() {
     super.initState();
-    _loadCategories();
     _searchController.addListener(() {
       setState(() {
         _searchProductText = _searchController.text;
       });
     });
+
+    // Setup animation
+    _controller = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 700),
+    );
+
+    _scaleAnimation = Tween<double>(begin: 0.85, end: 1.0).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeOut),
+    );
+
+    _loadCategories();
   }
 
-  void _loadCategories() async {
-    await Future.delayed(Duration(milliseconds: 300)); // shorter delay
+  void _loadCategories() {
     categories = CategoriesDb.getCategories();
     setState(() {
       _loading = false;
     });
-
-    // Short delay before animation
-    Future.delayed(Duration(milliseconds: 50), () {
-      setState(() => _showGrid = true);
-    });
+    _controller.forward(); // Start animation once data is loaded
   }
-
 
   @override
   void dispose() {
     _searchController.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
@@ -106,14 +115,16 @@ class _CategoryListScreenState extends State<CategoryListScreen> {
                 ),
                 SizedBox(width: 10),
                 IconButton(
-                  icon: Icon(Icons.search, size: 30, color: Colors.blueAccent),
+                  icon: Icon(Icons.search,
+                      size: 30, color: Colors.blueAccent),
                   onPressed: () {
                     if (_searchProductText.isNotEmpty) {
                       List<Product> filteredProducts = categories.values
                           .expand((list) => list)
                           .where((product) => product.title
                           .toLowerCase()
-                          .contains(_searchProductText.toLowerCase()))
+                          .contains(
+                          _searchProductText.toLowerCase()))
                           .toList();
 
                       Navigator.push(
@@ -131,75 +142,80 @@ class _CategoryListScreenState extends State<CategoryListScreen> {
               ],
             ),
           ),
-          // Animated Category Grid
-          Expanded(
-            child: AnimatedOpacity(
-              duration: Duration(milliseconds: 600),
-              opacity: _showGrid ? 1 : 0,
-              child: AnimatedSlide(
-                duration: Duration(milliseconds: 600),
-                offset: _showGrid ? Offset.zero : Offset(0, 0.2),
-                child: Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: GridView.builder(
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      childAspectRatio: 1,
-                      mainAxisSpacing: 12,
-                      crossAxisSpacing: 12,
-                    ),
-                    itemCount: categories.length,
-                    itemBuilder: (context, index) {
-                      String categoryName = categories.keys.elementAt(index);
-                      List<Product> categoryProducts = categories[categoryName]!;
 
-                      return GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  ProductsScreen(products: categoryProducts),
-                            ),
-                          );
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(15),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black12,
-                                blurRadius: 6,
-                                offset: Offset(0, 2),
-                              ),
-                            ],
-                            image: DecorationImage(
-                              image: AssetImage('images/$categoryName.jpg'),
-                              fit: BoxFit.cover,
-                            ),
+          /// AnimatedBuilder + Transform.scale from slide
+          Expanded(
+            child: AnimatedBuilder(
+              animation: _scaleAnimation,
+              builder: (context, child) {
+                return Transform.scale(
+                  scale: _scaleAnimation.value,
+                  child: child,
+                );
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: GridView.builder(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    childAspectRatio: 1,
+                    mainAxisSpacing: 12,
+                    crossAxisSpacing: 12,
+                  ),
+                  itemCount: categories.length,
+                  itemBuilder: (context, index) {
+                    String categoryName =
+                    categories.keys.elementAt(index);
+                    List<Product> categoryProducts =
+                    categories[categoryName]!;
+
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ProductsScreen(
+                                products: categoryProducts),
                           ),
-                          alignment: Alignment.center,
-                          child: Text(
-                            categoryName.toUpperCase(),
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 22,
-                              color: Colors.white,
-                              shadows: [
-                                Shadow(
-                                  color: Colors.black,
-                                  offset: Offset(2, 2),
-                                  blurRadius: 4,
-                                ),
-                              ],
+                        );
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(15),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black12,
+                              blurRadius: 6,
+                              offset: Offset(0, 2),
                             ),
-                            textAlign: TextAlign.center,
+                          ],
+                          image: DecorationImage(
+                            image: AssetImage(
+                                'images/$categoryName.jpg'),
+                            fit: BoxFit.cover,
                           ),
                         ),
-                      );
-                    },
-                  ),
+                        alignment: Alignment.center,
+                        child: Text(
+                          categoryName.toUpperCase(),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 22,
+                            color: Colors.white,
+                            shadows: [
+                              Shadow(
+                                color: Colors.black,
+                                offset: Offset(2, 2),
+                                blurRadius: 4,
+                              ),
+                            ],
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    );
+                  },
                 ),
               ),
             ),

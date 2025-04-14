@@ -28,4 +28,8 @@ class CartDb {
   static void removeFromCart(int productId) {
     cartList.removeWhere((cartItem) => cartItem.productId == productId);
   }
+
+  static void resetCart() {
+    cartList = [];
+  }
 }
