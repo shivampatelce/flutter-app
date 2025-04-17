@@ -18,7 +18,8 @@ class ProductsDetailsScreen extends StatefulWidget {
   _ProductsDetailsScreenState createState() => _ProductsDetailsScreenState();
 }
 
-class _ProductsDetailsScreenState extends State<ProductsDetailsScreen> with TickerProviderStateMixin {
+class _ProductsDetailsScreenState extends State<ProductsDetailsScreen>
+    with TickerProviderStateMixin {
   late int cartQuantity;
   late Product product;
 
@@ -34,18 +35,26 @@ class _ProductsDetailsScreenState extends State<ProductsDetailsScreen> with Tick
     updateCartItem();
 
     // Animations
-    _imageController = AnimationController(vsync: this, duration: Duration(milliseconds: 800));
-    _contentController = AnimationController(vsync: this, duration: Duration(milliseconds: 600));
+    _imageController = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 800),
+    );
+    _contentController = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 600),
+    );
 
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
-      parent: _imageController,
-      curve: Curves.easeIn,
-    ));
+    _fadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _imageController, curve: Curves.easeIn));
 
-    _slideAnimation = Tween<Offset>(begin: Offset(0, 0.2), end: Offset.zero).animate(CurvedAnimation(
-      parent: _contentController,
-      curve: Curves.easeOut,
-    ));
+    _slideAnimation = Tween<Offset>(
+      begin: Offset(0, 0.2),
+      end: Offset.zero,
+    ).animate(
+      CurvedAnimation(parent: _contentController, curve: Curves.easeOut),
+    );
 
     _imageController.forward();
     _contentController.forward();
@@ -119,10 +128,15 @@ class _ProductsDetailsScreenState extends State<ProductsDetailsScreen> with Tick
                   child: Image.asset(
                     "images/${product.image}",
                     fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => Container(
-                      color: Colors.grey[200],
-                      child: Icon(Icons.broken_image, size: 80, color: Colors.grey),
-                    )
+                    errorBuilder:
+                        (_, __, ___) => Container(
+                          color: Colors.grey[200],
+                          child: Icon(
+                            Icons.broken_image,
+                            size: 80,
+                            color: Colors.grey,
+                          ),
+                        ),
                   ),
                 ),
               ),
@@ -145,27 +159,46 @@ class _ProductsDetailsScreenState extends State<ProductsDetailsScreen> with Tick
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               IconButton(
-                                icon: Icon(Icons.remove_circle, color: Colors.redAccent, size: 30),
+                                icon: Icon(
+                                  Icons.remove_circle,
+                                  color: Colors.redAccent,
+                                  size: 30,
+                                ),
                                 onPressed: () {
                                   if (cartQuantity > 1) {
-                                    CartDb.addToCart(product.productId, cartQuantity - 1);
+                                    CartDb.addToCart(
+                                      product.productId,
+                                      cartQuantity - 1,
+                                    );
                                     updateCartItem();
                                     widget.onCartUpdate();
                                   }
                                 },
                               ),
                               Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12.0,
+                                ),
                                 child: Text(
                                   cartQuantity.toString(),
-                                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ),
                               IconButton(
-                                icon: Icon(Icons.add_circle, color: Colors.green, size: 30),
+                                icon: Icon(
+                                  Icons.add_circle,
+                                  color: Colors.green,
+                                  size: 30,
+                                ),
                                 onPressed: () {
                                   if (cartQuantity < 5) {
-                                    CartDb.addToCart(product.productId, cartQuantity + 1);
+                                    CartDb.addToCart(
+                                      product.productId,
+                                      cartQuantity + 1,
+                                    );
                                     updateCartItem();
                                     widget.onCartUpdate();
                                   }
@@ -187,17 +220,63 @@ class _ProductsDetailsScreenState extends State<ProductsDetailsScreen> with Tick
                               updateCartItem();
                               widget.onCartUpdate();
                             },
-                            icon: Icon(cartQuantity == 0 ? Icons.add_shopping_cart : Icons.delete),
+                            icon: Icon(
+                              cartQuantity == 0
+                                  ? Icons.add_shopping_cart
+                                  : Icons.delete,
+                            ),
                             label: Text(
-                              cartQuantity == 0 ? "Add to Cart" : "Remove from Cart",
-                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                              cartQuantity == 0
+                                  ? "Add to Cart"
+                                  : "Remove from Cart",
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                             style: ElevatedButton.styleFrom(
                               padding: EdgeInsets.symmetric(vertical: 14),
-                              backgroundColor: cartQuantity == 0 ? Colors.blueAccent : Colors.redAccent,
+                              backgroundColor:
+                                  cartQuantity == 0
+                                      ? Colors.blueAccent
+                                      : Colors.redAccent,
                               foregroundColor: Colors.white,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        // Buy now button
+                        Padding(
+                          padding: EdgeInsets.only(top: 16),
+                          child: SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton.icon(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => CheckoutScreen(),
+                                  ),
+                                );
+                              },
+                              icon: Icon(Icons.payment),
+                              label: Text(
+                                "Buy Now",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                padding: EdgeInsets.symmetric(vertical: 14),
+                                backgroundColor: Colors.blueAccent,
+                                foregroundColor: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
                               ),
                             ),
                           ),
@@ -207,25 +286,46 @@ class _ProductsDetailsScreenState extends State<ProductsDetailsScreen> with Tick
                   ),
                   const SizedBox(height: 30),
 
-                  Text(product.title,
-                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                  Text(
+                    product.title,
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  ),
                   const SizedBox(height: 8),
 
-                  Text("\$${product.price.toStringAsFixed(2)}",
-                      style: TextStyle(
-                          fontSize: 20, color: Colors.green[700], fontWeight: FontWeight.w600)),
+                  Text(
+                    "\$${product.price.toStringAsFixed(2)}",
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: Colors.green[700],
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                   const SizedBox(height: 24),
 
-                  Text("Overview", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  Text(
+                    "Overview",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
                   const SizedBox(height: 8),
-                  Text(product.shortDescription,
-                      style: TextStyle(fontSize: 16, color: Colors.grey[800])),
+                  Text(
+                    product.shortDescription,
+                    style: TextStyle(fontSize: 16, color: Colors.grey[800]),
+                  ),
 
                   const SizedBox(height: 24),
-                  Text("Details", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  Text(
+                    "Details",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
                   const SizedBox(height: 8),
-                  Text(product.longDescription,
-                      style: TextStyle(fontSize: 16, color: Colors.grey[800], height: 1.4)),
+                  Text(
+                    product.longDescription,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey[800],
+                      height: 1.4,
+                    ),
+                  ),
                 ],
               ),
             ),
