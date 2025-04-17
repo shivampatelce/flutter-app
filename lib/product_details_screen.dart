@@ -258,7 +258,10 @@ class _ProductsDetailsScreenState extends State<ProductsDetailsScreen>
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => CheckoutScreen(),
+                                    builder:
+                                        (context) => CheckoutScreen(
+                                          totalAmount: product.price,
+                                        ),
                                   ),
                                 );
                               },

@@ -4,6 +4,7 @@ import 'package:flutterprjgroup3/cart_db.dart';
 import 'package:flutterprjgroup3/cart_screen.dart';
 import 'package:flutterprjgroup3/categories_db.dart';
 import 'package:flutterprjgroup3/category_list_screen.dart';
+import 'package:flutterprjgroup3/checkout_screen.dart';
 import 'package:flutterprjgroup3/product.dart';
 import 'package:flutterprjgroup3/product_details_screen.dart';
 
@@ -196,7 +197,7 @@ class _ProductsScreenState extends State<ProductsScreen>
                         gridDelegate:
                             const SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: 2,
-                              childAspectRatio: 0.75,
+                              childAspectRatio: 0.7,
                               crossAxisSpacing: 12,
                               mainAxisSpacing: 12,
                             ),
@@ -231,7 +232,6 @@ class _ProductsScreenState extends State<ProductsScreen>
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   ClipRRect(
                                     borderRadius: const BorderRadius.vertical(
@@ -239,89 +239,134 @@ class _ProductsScreenState extends State<ProductsScreen>
                                     ),
                                     child: Image.asset(
                                       "images/${product.image}",
-                                      height: 150,
+                                      height: 120,
                                       width: double.infinity,
                                       fit: BoxFit.cover,
                                     ),
                                   ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Column(
-                                      children: [
-                                        Text(
-                                          product.title,
-                                          style: const TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                        const SizedBox(height: 5),
-                                        Text(
-                                          "\$${product.price.toStringAsFixed(2)}",
-                                          style: const TextStyle(
-                                            fontSize: 14,
-                                            color: Colors.blueAccent,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 8),
-                                        if (cartQuantity > 0)
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              IconButton(
-                                                icon: const Icon(Icons.remove),
-                                                onPressed: () {
-                                                  if (cartQuantity > 1) {
-                                                    CartDb.addToCart(
-                                                      productId,
-                                                      cartQuantity - 1,
-                                                    );
-                                                    updateCart();
-                                                  }
-                                                },
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(6.0),
+                                      child: SingleChildScrollView(
+                                        child: Column(
+                                          children: [
+                                            Text(
+                                              product.title,
+                                              style: const TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.bold,
                                               ),
-                                              Text(
-                                                cartQuantity.toString(),
-                                                style: const TextStyle(
-                                                  fontSize: 16,
+                                              textAlign: TextAlign.center,
+                                            ),
+                                            const SizedBox(height: 4),
+                                            Text(
+                                              "\$${product.price.toStringAsFixed(2)}",
+                                              style: const TextStyle(
+                                                fontSize: 14,
+                                                color: Colors.blueAccent,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 6),
+                                            if (cartQuantity > 0)
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  IconButton(
+                                                    icon: const Icon(
+                                                      Icons.remove,
+                                                    ),
+                                                    iconSize: 18,
+                                                    onPressed: () {
+                                                      if (cartQuantity > 1) {
+                                                        CartDb.addToCart(
+                                                          productId,
+                                                          cartQuantity - 1,
+                                                        );
+                                                        updateCart();
+                                                      }
+                                                    },
+                                                  ),
+                                                  Text(
+                                                    cartQuantity.toString(),
+                                                    style: const TextStyle(
+                                                      fontSize: 14,
+                                                    ),
+                                                  ),
+                                                  IconButton(
+                                                    icon: const Icon(Icons.add),
+                                                    iconSize: 18,
+                                                    onPressed: () {
+                                                      if (cartQuantity < 5) {
+                                                        CartDb.addToCart(
+                                                          productId,
+                                                          cartQuantity + 1,
+                                                        );
+                                                        updateCart();
+                                                      }
+                                                    },
+                                                  ),
+                                                ],
+                                              ),
+                                            ElevatedButton(
+                                              onPressed: () {
+                                                if (cartQuantity == 0) {
+                                                  CartDb.addToCart(
+                                                    productId,
+                                                    1,
+                                                  );
+                                                } else {
+                                                  CartDb.removeFromCart(
+                                                    productId,
+                                                  );
+                                                }
+                                                updateCart();
+                                              },
+                                              style: ElevatedButton.styleFrom(
+                                                backgroundColor:
+                                                cartQuantity == 0 ? Colors.blueAccent : Colors.redAccent,
+                                                foregroundColor: Colors.white,
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                      horizontal: 12,
+                                                    ),
+                                                textStyle: const TextStyle(
+                                                  fontSize: 12,
                                                 ),
                                               ),
-                                              IconButton(
-                                                icon: const Icon(Icons.add),
-                                                onPressed: () {
-                                                  if (cartQuantity < 5) {
-                                                    CartDb.addToCart(
-                                                      productId,
-                                                      cartQuantity + 1,
-                                                    );
-                                                    updateCart();
-                                                  }
-                                                },
+                                              child: Text(
+                                                cartQuantity == 0
+                                                    ? "Add to Cart"
+                                                    : "Remove",
                                               ),
-                                            ],
-                                          ),
-                                        ElevatedButton(
-                                          onPressed: () {
-                                            if (cartQuantity == 0) {
-                                              CartDb.addToCart(productId, 1);
-                                            } else {
-                                              CartDb.removeFromCart(productId);
-                                            }
-                                            updateCart();
-                                          },
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor: Colors.blueAccent,
-                                            foregroundColor: Colors.white,
-                                          ),
-                                          child: Text(
-                                            cartQuantity == 0
-                                                ? "Add to Cart"
-                                                : "Remove",
-                                          ),
+                                            ),
+                                            const SizedBox(height: 6),
+                                            ElevatedButton(
+                                              onPressed: () {
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder:
+                                                        (_) => CheckoutScreen(totalAmount: product.price,),
+                                                  ),
+                                                );
+                                              },
+                                              style: ElevatedButton.styleFrom(
+                                                backgroundColor: Colors.green,
+                                                foregroundColor: Colors.white,
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                      horizontal: 12,
+                                                    ),
+                                                textStyle: const TextStyle(
+                                                  fontSize: 12,
+                                                ),
+                                              ),
+                                              child: const Text("Buy Now"),
+                                            ),
+                                          ],
                                         ),
-                                      ],
+                                      ),
                                     ),
                                   ),
                                 ],

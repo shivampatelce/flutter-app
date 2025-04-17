@@ -3,7 +3,8 @@ import 'package:flutterprjgroup3/category_list_screen.dart';
 
 class OrderConfirmationScreen extends StatefulWidget {
   @override
-  _OrderConfirmationScreenState createState() => _OrderConfirmationScreenState();
+  _OrderConfirmationScreenState createState() =>
+      _OrderConfirmationScreenState();
 }
 
 class _OrderConfirmationScreenState extends State<OrderConfirmationScreen>
@@ -20,13 +21,15 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen>
       duration: Duration(milliseconds: 800),
     );
 
-    _fadeAnimation = Tween<double>(begin: 0, end: 1).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeIn),
-    );
+    _fadeAnimation = Tween<double>(
+      begin: 0,
+      end: 1,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeIn));
 
-    _slideAnimation = Tween<Offset>(begin: Offset(0, 0.2), end: Offset.zero).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeOut),
-    );
+    _slideAnimation = Tween<Offset>(
+      begin: Offset(0, 0.2),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
 
     _controller.forward(); // Start animation
   }
@@ -49,41 +52,59 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen>
         backgroundColor: Colors.blueAccent,
       ),
       body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            children: [
-              Text(
-                "Thank you for your order!",
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
-              ),
-              Text(
-                "Your order has been placed successfully.",
-                style: TextStyle(fontSize: 16, color: Colors.black87),
-                textAlign: TextAlign.center,
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => CategoryListScreen(),
-                    ),
+        child: FadeTransition(
+          opacity: _fadeAnimation,
+          child: SlideTransition(
+            position: _slideAnimation,
+            child: Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.check_circle_outline,
+                    size: 100,
+                    color: Colors.green,
+                  ),
+                  SizedBox(height: 20),
+                  Text(
+                    "Thank you for your order!",
+                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(height: 10),
+                  Text(
+                    "Your order has been placed successfully.",
+                    style: TextStyle(fontSize: 16, color: Colors.black87),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(height: 30),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CategoryListScreen(),
+                        ),
                         (route) => false,
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blueAccent,
-                  padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                  textStyle: TextStyle(fontSize: 16),
-                ),
-                child: Text(
-                  "Continue Shopping",
-                  style: TextStyle(color: Colors.white),
-                ),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blueAccent,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 40,
+                        vertical: 15,
+                      ),
+                      textStyle: TextStyle(fontSize: 16),
+                    ),
+                    child: Text(
+                      "Continue Shopping",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),

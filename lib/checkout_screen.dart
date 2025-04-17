@@ -3,6 +3,8 @@ import 'package:flutterprjgroup3/cart_db.dart';
 import 'package:flutterprjgroup3/order_confirmation_screen.dart';
 
 class CheckoutScreen extends StatelessWidget {
+  final double totalAmount;
+
   final streetController = TextEditingController();
   final cityController = TextEditingController();
   final provinceController = TextEditingController();
@@ -11,6 +13,8 @@ class CheckoutScreen extends StatelessWidget {
   final cardNumberController = TextEditingController();
   final expiryDateController = TextEditingController();
   final cvvController = TextEditingController();
+
+  CheckoutScreen({super.key, required this.totalAmount});
 
   void showMessage(BuildContext context, String message) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -190,6 +194,14 @@ class CheckoutScreen extends StatelessWidget {
                   ),
                 ),
               ],
+            ),
+            SizedBox(height: 20),
+
+            Center(
+              child: Text(
+                'Total to Pay: \$${totalAmount.toStringAsFixed(2)}',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
             ),
             SizedBox(height: 20),
 
