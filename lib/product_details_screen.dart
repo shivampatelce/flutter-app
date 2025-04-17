@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutterprjgroup3/cart_db.dart';
 import 'package:flutterprjgroup3/cart_screen.dart';
+import 'package:flutterprjgroup3/checkout_screen.dart';
 import 'package:flutterprjgroup3/product.dart';
 
 class ProductsDetailsScreen extends StatefulWidget {
@@ -90,7 +91,11 @@ class _ProductsDetailsScreenState extends State<ProductsDetailsScreen> {
                   errorBuilder: (context, error, stackTrace) {
                     return Container(
                       color: Colors.grey[200],
-                      child: Icon(Icons.broken_image, size: 80, color: Colors.grey),
+                      child: Icon(
+                        Icons.broken_image,
+                        size: 80,
+                        color: Colors.grey,
+                      ),
                     );
                   },
                 ),
@@ -108,10 +113,17 @@ class _ProductsDetailsScreenState extends State<ProductsDetailsScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         IconButton(
-                          icon: Icon(Icons.remove_circle, color: Colors.redAccent, size: 30),
+                          icon: Icon(
+                            Icons.remove_circle,
+                            color: Colors.redAccent,
+                            size: 30,
+                          ),
                           onPressed: () {
                             if (cartQuantity > 1) {
-                              CartDb.addToCart(product.productId, cartQuantity - 1);
+                              CartDb.addToCart(
+                                product.productId,
+                                cartQuantity - 1,
+                              );
                               updateCartItem();
                               widget.onCartUpdate();
                             }
@@ -121,14 +133,24 @@ class _ProductsDetailsScreenState extends State<ProductsDetailsScreen> {
                           padding: const EdgeInsets.symmetric(horizontal: 12.0),
                           child: Text(
                             cartQuantity.toString(),
-                            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                         IconButton(
-                          icon: Icon(Icons.add_circle, color: Colors.green, size: 30),
+                          icon: Icon(
+                            Icons.add_circle,
+                            color: Colors.green,
+                            size: 30,
+                          ),
                           onPressed: () {
                             if (cartQuantity < 5) {
-                              CartDb.addToCart(product.productId, cartQuantity + 1);
+                              CartDb.addToCart(
+                                product.productId,
+                                cartQuantity + 1,
+                              );
                               updateCartItem();
                               widget.onCartUpdate();
                             }
@@ -150,17 +172,60 @@ class _ProductsDetailsScreenState extends State<ProductsDetailsScreen> {
                         updateCartItem();
                         widget.onCartUpdate();
                       },
-                      icon: Icon(cartQuantity == 0 ? Icons.add_shopping_cart : Icons.delete),
+                      icon: Icon(
+                        cartQuantity == 0
+                            ? Icons.add_shopping_cart
+                            : Icons.delete,
+                      ),
                       label: Text(
                         cartQuantity == 0 ? "Add to Cart" : "Remove from Cart",
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       style: ElevatedButton.styleFrom(
                         padding: EdgeInsets.symmetric(vertical: 14),
-                        backgroundColor: cartQuantity == 0 ? Colors.blueAccent : Colors.redAccent,
+                        backgroundColor:
+                            cartQuantity == 0
+                                ? Colors.blueAccent
+                                : Colors.redAccent,
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                  ),
+                  // Buy now button
+                  Padding(
+                    padding: EdgeInsets.only(top: 16),
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => CheckoutScreen(),
+                            ),
+                          );
+                        },
+                        icon: Icon(Icons.payment),
+                        label: Text(
+                          "Buy Now",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          padding: EdgeInsets.symmetric(vertical: 14),
+                          backgroundColor: Colors.blueAccent,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                         ),
                       ),
                     ),
@@ -179,7 +244,11 @@ class _ProductsDetailsScreenState extends State<ProductsDetailsScreen> {
             const SizedBox(height: 8),
             Text(
               "\$${product.price.toStringAsFixed(2)}",
-              style: TextStyle(fontSize: 20, color: Colors.green[700], fontWeight: FontWeight.w600),
+              style: TextStyle(
+                fontSize: 20,
+                color: Colors.green[700],
+                fontWeight: FontWeight.w600,
+              ),
             ),
 
             const SizedBox(height: 24),
@@ -205,7 +274,11 @@ class _ProductsDetailsScreenState extends State<ProductsDetailsScreen> {
             const SizedBox(height: 8),
             Text(
               product.longDescription,
-              style: TextStyle(fontSize: 16, color: Colors.grey[800], height: 1.4),
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.grey[800],
+                height: 1.4,
+              ),
             ),
           ],
         ),

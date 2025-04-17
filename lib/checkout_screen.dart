@@ -159,7 +159,7 @@ class CheckoutScreen extends StatelessWidget {
               decoration: InputDecoration(
                 labelText: 'Card Number',
                 border: OutlineInputBorder(),
-                counterText: '', // Hide character counter
+                counterText: '',
               ),
             ),
             SizedBox(height: 10),
@@ -185,7 +185,7 @@ class CheckoutScreen extends StatelessWidget {
                     decoration: InputDecoration(
                       labelText: 'CVV',
                       border: OutlineInputBorder(),
-                      counterText: '', // Hide character counter
+                      counterText: '',
                     ),
                   ),
                 ),
