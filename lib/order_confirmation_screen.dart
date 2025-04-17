@@ -1,6 +1,42 @@
 import 'package:flutter/material.dart';
 import 'package:flutterprjgroup3/category_list_screen.dart';
 
+class OrderConfirmationScreen extends StatefulWidget {
+  @override
+  _OrderConfirmationScreenState createState() => _OrderConfirmationScreenState();
+}
+
+class _OrderConfirmationScreenState extends State<OrderConfirmationScreen>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _fadeAnimation;
+  late Animation<Offset> _slideAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 800),
+    );
+
+    _fadeAnimation = Tween<double>(begin: 0, end: 1).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeIn),
+    );
+
+    _slideAnimation = Tween<Offset>(begin: Offset(0, 0.2), end: Offset.zero).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeOut),
+    );
+
+    _controller.forward(); // Start animation
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -17,39 +53,39 @@ import 'package:flutterprjgroup3/category_list_screen.dart';
           padding: const EdgeInsets.all(24.0),
           child: Column(
             children: [
-                    Text(
-                      "Thank you for your order!",
-                      style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                      textAlign: TextAlign.center,
+              Text(
+                "Thank you for your order!",
+                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              ),
+              Text(
+                "Your order has been placed successfully.",
+                style: TextStyle(fontSize: 16, color: Colors.black87),
+                textAlign: TextAlign.center,
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => CategoryListScreen(),
                     ),
-                    Text(
-                      "Your order has been placed successfully.",
-                      style: TextStyle(fontSize: 16, color: Colors.black87),
-                      textAlign: TextAlign.center,
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => CategoryListScreen(),
-                          ),
-                              (route) => false,
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blueAccent,
-                        padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                        textStyle: TextStyle(fontSize: 16),
-                      ),
-                      child: Text(
-                        "Continue Shopping",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                  ],
+                        (route) => false,
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blueAccent,
+                  padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                  textStyle: TextStyle(fontSize: 16),
+                ),
+                child: Text(
+                  "Continue Shopping",
+                  style: TextStyle(color: Colors.white),
                 ),
               ),
+            ],
+          ),
+        ),
       ),
     );
   }
