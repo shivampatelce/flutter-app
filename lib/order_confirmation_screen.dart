@@ -16,22 +16,19 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen>
   @override
   void initState() {
     super.initState();
+
     _controller = AnimationController(
-      vsync: this,
       duration: Duration(milliseconds: 800),
+      vsync: this,
     );
 
-    _fadeAnimation = Tween<double>(
-      begin: 0,
-      end: 1,
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeIn));
-
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(_controller);
     _slideAnimation = Tween<Offset>(
       begin: Offset(0, 0.2),
       end: Offset.zero,
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
+    ).animate(_controller);
 
-    _controller.forward(); // Start animation
+    _controller.forward();
   }
 
   @override
